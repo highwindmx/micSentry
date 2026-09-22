@@ -3,6 +3,9 @@
 * text=auto eol=crlf
 Rust/** text=auto eol=lf
 
+# AutoHotkey 脚本保持 CRLF（Windows 原生格式，AHK 与编辑器都按此预期）
+*.ahk text eol=crlf
+
 # 二进制文件不做换行符转换
 *.png binary
 *.ico binary

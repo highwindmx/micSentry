@@ -12,8 +12,8 @@ Csharp/bin/
 Csharp/obj/
 Csharp/dist/
 
-# ---- Autohotkey 版：独立仓库，不并入本仓库 ----
-Autohotkey/
+# ---- Autohotkey 版 ----
+# 纯脚本，无构建产物；目录本身需要纳入版本管理
 
 # ---- WorkBuddy 本地数据（会话记忆、技能），仅本地留存 ----
 .workbuddy/
