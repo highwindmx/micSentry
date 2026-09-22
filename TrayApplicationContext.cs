@@ -15,13 +15,19 @@ public sealed class TrayApplicationContext : ApplicationContext
     private readonly AudioEngine _audio;
     private readonly Hotkey _hotkey;
     private readonly Hotkey _hotkeyOverlay;
-    private readonly OverlayForm _overlay;
-    private readonly System.Windows.Forms.Timer _refreshTimer;
+        private readonly OverlayForm _overlay;
+        private readonly System.Windows.Forms.Timer _refreshTimer;
+        private readonly Control _marshal; // 不可见封送控件：构造期即创建句柄，用于把后台线程刷新安全切回 UI 线程
     private Icon? _currentIcon;
 
     public TrayApplicationContext()
     {
         _audio = new AudioEngine();
+
+        // 专用不可见控件，构造期即创建句柄，用于把后台(WASAPI/热键)线程的刷新请求安全封送回 UI 线程。
+        // 不依赖悬浮窗句柄，避免“句柄未创建时调用 BeginInvoke”崩溃。
+        _marshal = new Control();
+        _marshal.CreateControl();
 
         _tray = new NotifyIcon
         {
@@ -41,10 +47,7 @@ public sealed class TrayApplicationContext : ApplicationContext
         };
 
         // WASAPI 回调可能在非 UI 线程触发，统一 BeginInvoke 回 UI 线程刷新（_overlay 句柄已在构造末 CreateControl）
-        _audio.StateChanged += (_, _) =>
-        {
-            if (_overlay != null) _overlay.BeginInvoke(Refresh);
-        };
+        _audio.StateChanged += (_, _) => UiInvoke(Refresh);
 
         // 实时回调兜底：2s 定时器，防止个别事件丢失导致状态不同步
         _refreshTimer = new System.Windows.Forms.Timer { Interval = 2000 };
@@ -76,12 +79,24 @@ public sealed class TrayApplicationContext : ApplicationContext
         {
             _audio.ToggleDeviceMute();
             Refresh();
-            if (_overlay.Visible) _overlay.BeginInvoke(_overlay.Invalidate);
+            if (_overlay.Visible) UiInvoke(() => _overlay.Invalidate());
         }
         catch
         {
             // 热键回调异常不应击垮 NativeWindow 的消息循环
         }
+    }
+
+    /// <summary>
+    /// 把刷新请求封送到 UI 线程。优先用 _marshal（构造期已创建句柄、生命周期伴随进程），
+    /// 其次回退悬浮窗句柄；若两者句柄都未就绪（极早期），丢弃本次刷新，2s 定时器会兜底补刷。
+    /// </summary>
+    private void UiInvoke(Action action)
+    {
+        if (_marshal != null && _marshal.IsHandleCreated)
+            _marshal.BeginInvoke(action);
+        else if (_overlay != null && _overlay.IsHandleCreated)
+            _overlay.BeginInvoke(action);
     }
 
     private void Refresh()
@@ -144,8 +159,8 @@ public sealed class TrayApplicationContext : ApplicationContext
             exit.Click += (_, _) => Exit();
             menu.Items.Add(exit);
 
-            // 双保险：托盘状态变化后强制悬浮窗重绘（其 OnPaint 读实时状态）
-            if (_overlay.Visible) _overlay.BeginInvoke(_overlay.Invalidate);
+            // 双保险：托盘状态变化后强制悬浮窗重绘（其 OnPaint 读实时状态）。Refresh 本身已在 UI 线程，直接调用即可。
+            if (_overlay.Visible) _overlay.Invalidate();
         }
         catch
         {
@@ -183,6 +198,7 @@ public sealed class TrayApplicationContext : ApplicationContext
         _hotkeyOverlay.Unregister();
         _hotkeyOverlay.Dispose();
         _overlay.Dispose();
+        _marshal.Dispose();
         _tray.Visible = false;
         _tray.Dispose();
         _currentIcon = null;
