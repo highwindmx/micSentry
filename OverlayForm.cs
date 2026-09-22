@@ -45,8 +45,6 @@ internal sealed class OverlayForm : Form
         _menu.Items.Add(hide);
         _menu.Items.Add(exit);
         ContextMenuStrip = _menu;
-
-        _audio.StateChanged += (_, _) => BeginInvoke(Invalidate);
     }
 
     protected override void OnHandleCreated(EventArgs e)
