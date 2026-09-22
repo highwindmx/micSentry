@@ -1,6 +1,33 @@
-bin/
-obj/
-dist/
-*.user
-.vs/
+# ---------------------------------------------------------------
+# 构建产物与本地数据。切勿把编译产物提交进仓库：
+#   Rust/target = 5.5 GB, Rust/toolchain = 639 MB, Csharp/bin|obj|dist ≈ 240 MB
+# ---------------------------------------------------------------
+
+# ---- Rust 版 ----
+Rust/target/
+Rust/toolchain/
+
+# ---- C# 版（冗余声明，Csharp/.gitignore 已覆盖）----
+Csharp/bin/
+Csharp/obj/
+Csharp/dist/
+
+# ---- Autohotkey 版：独立仓库，不并入本仓库 ----
+Autohotkey/
+
+# ---- WorkBuddy 本地数据（会话记忆、技能），仅本地留存 ----
+.workbuddy/
+
+# ---- 运行期输出与日志 ----
 *.log
+MicTrayRs-diag.txt
+icons-preview.png
+icons-zoom.png
+
+# ---- 编辑器 / 系统 ----
+.vs/
+.idea/
+.vscode/
+*.user
+Thumbs.db
+desktop.ini

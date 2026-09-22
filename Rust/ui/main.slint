@@ -1,0 +1,38 @@
+export component MainWindow inherits Window {
+    in-out property <bool> muted: false;
+    in-out property <image> mic-image;
+
+    callback toggle();
+    callback hide_overlay();
+    callback drag_start();
+    callback drag_move(dx: length, dy: length);
+
+    width: 96px;
+    height: 96px;
+    background: transparent;
+    no-frame: true;
+    always-on-top: true;
+
+    Image {
+        source: mic-image;
+        width: 100%;
+        height: 100%;
+    }
+
+    TouchArea {
+        width: 100%;
+        height: 100%;
+        clicked => { root.toggle() }
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down {
+                root.drag_start()
+            }
+            if event.button == PointerEventButton.right {
+                root.hide_overlay()
+            }
+        }
+        moved => {
+            root.drag_move(self.mouse-x - self.pressed-x, self.mouse-y - self.pressed-y)
+        }
+    }
+}

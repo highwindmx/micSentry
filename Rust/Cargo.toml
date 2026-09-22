@@ -1,0 +1,20 @@
+[package]
+name = "MicTrayRs"
+version = "0.1.0"
+edition = "2024"
+build = "build.rs"
+
+[dependencies]
+dirs = "7.0.0"
+global-hotkey = "0.8.0"
+# renderer-software：当 femtovg/OpenGL 不可用时可用 SLINT_BACKEND=winit-software 兜底
+slint = { version = "1", features = ["renderer-software"] }
+tray-icon = "0.25.1"
+# Win32_UI_Shell_PropertiesSystem : IMMDevice::OpenPropertyStore -> IPropertyStore（读设备友好名）
+# Win32_Devices_FunctionDiscovery : PKEY_Device_FriendlyName
+# Win32_System_Com_StructuredStorage : IMMDevice::Activate / PropVariantClear / PropVariantToStringAlloc
+windows = { version = "0.62.2", features = ["Win32_Media_Audio", "Win32_Media_Audio_Endpoints", "Win32_System_Com", "Win32_System_Com_StructuredStorage", "Win32_System_Variant", "Win32_UI_Shell", "Win32_UI_Shell_PropertiesSystem", "Win32_Devices_FunctionDiscovery", "Win32_Foundation", "Win32_UI_WindowsAndMessaging"] }
+winreg = "0.56.0"
+
+[build-dependencies]
+slint-build = "1"

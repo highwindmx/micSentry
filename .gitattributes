@@ -1,5 +1,11 @@
+# 统一换行符策略：仓库存 LF，Windows 工作区检出 CRLF。
+# Rust 部分例外 —— 跟随 Rust 生态惯例，仓库与工作区都用 LF。
 * text=auto eol=crlf
+Rust/** text=auto eol=lf
+
+# 二进制文件不做换行符转换
 *.png binary
 *.ico binary
 *.exe binary
 *.dll binary
+*.zip binary
