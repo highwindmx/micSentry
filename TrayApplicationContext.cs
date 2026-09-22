@@ -118,7 +118,7 @@ public sealed class TrayApplicationContext : ApplicationContext
             var menu = _tray.ContextMenuStrip ??= new ContextMenuStrip();
             menu.Items.Clear();
 
-            var toggle = new ToolStripMenuItem(muted ? "解除全局静音" : "全局静音")
+            var toggle = new ToolStripMenuItem(muted ? "解除全局静音 (Ctrl+Alt+M)" : "全局静音 (Ctrl+Alt+M)")
             {
                 Font = new Font(menu.Font, FontStyle.Bold)
             };
@@ -143,7 +143,7 @@ public sealed class TrayApplicationContext : ApplicationContext
             }
 
             menu.Items.Add(new ToolStripSeparator());
-            var ov = new ToolStripMenuItem(_overlay.Visible ? "隐藏悬浮窗" : "显示悬浮窗");
+            var ov = new ToolStripMenuItem(_overlay.Visible ? "隐藏悬浮窗 (Ctrl+Alt+O)" : "显示悬浮窗 (Ctrl+Alt+O)");
             ov.Click += (_, _) => ToggleOverlay();
             menu.Items.Add(ov);
 

@@ -38,7 +38,7 @@ internal sealed class OverlayForm : Form
 
         // 右键菜单：隐藏悬浮窗（Ctrl+Alt+O 可再次唤出）/ 退出整个程序
         _menu = new ContextMenuStrip();
-        var hide = new ToolStripMenuItem("隐藏悬浮窗");
+        var hide = new ToolStripMenuItem("隐藏悬浮窗 (Ctrl+Alt+O)");
         hide.Click += (_, _) => Hide();
         var exit = new ToolStripMenuItem("退出 MicTray");
         exit.Click += (_, _) => Application.Exit();
